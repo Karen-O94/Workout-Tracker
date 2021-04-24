@@ -1,7 +1,7 @@
 const db = require("../models");
 const router = require("express").Router();
 
-//get workouts
+//This route allows users to get all workouts
 router.get("/api/workouts", (req, res) => {
 
     db.Workout.find({}).then(dbWorkout => {
@@ -21,3 +21,24 @@ router.get("/api/workouts", (req, res) => {
         res.json(err);
     });
 });
+
+// This route allows users to add an exercise
+router.put("/api/workouts/:id", (req, res) => {
+
+    db.Workout.findOneAndUpdate(
+        { _id: req.params.id }, //find workout at specific id
+        {
+            $inc: { totalDuration: req.body.duration }, //include total duration
+            $push: { exercises: req.body } //push exercise to the json object
+        },
+        { new: true }).then(dbWorkout => {
+            res.json(dbWorkout);
+        }).catch(err => {
+            res.json(err);
+        });
+
+});
+
+
+
+module.exports = router;
